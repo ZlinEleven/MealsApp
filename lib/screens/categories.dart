@@ -8,10 +8,16 @@ import 'package:meals/widgets/category_grid_item.dart';
 import 'package:meals/models/meal.dart';
 
 class CategoriesScreen extends StatelessWidget {
-  const CategoriesScreen({super.key});
+  const CategoriesScreen(
+      {super.key,
+      required this.toggleMealFavoriteFunc,
+      required this.availableMeals});
+
+  final void Function(Meal) toggleMealFavoriteFunc;
+  final List<Meal> availableMeals;
 
   void _selectCategory(BuildContext context, Category category) {
-    List<Meal> categoryMeals = dummyMeals
+    List<Meal> categoryMeals = availableMeals
         .where((meal) => meal.categories.contains(category.id))
         .toList();
 
@@ -21,6 +27,7 @@ class CategoriesScreen extends StatelessWidget {
         builder: ((context) => MealsScreen(
               title: category.title,
               meals: categoryMeals,
+              toggleMealFavoriteFunc: toggleMealFavoriteFunc,
             )),
       ),
     );
@@ -28,26 +35,22 @@ class CategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pick your category'),
+    return GridView(
+      padding: const EdgeInsets.all(24),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 3 / 2,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
       ),
-      body: GridView(
-          padding: const EdgeInsets.all(24),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 3 / 2,
-            crossAxisSpacing: 20,
-            mainAxisSpacing: 20,
-          ),
-          children: availableCategories
-              .map((category) => CategoryGridItem(
-                    onTapFunction: () {
-                      _selectCategory(context, category);
-                    },
-                    category: category,
-                  ))
-              .toList()),
+      children: availableCategories
+          .map((category) => CategoryGridItem(
+                onTapFunction: () {
+                  _selectCategory(context, category);
+                },
+                category: category,
+              ))
+          .toList(),
     );
   }
 }
